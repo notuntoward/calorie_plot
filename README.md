@@ -12,18 +12,24 @@ A dashboard for visualizing cronology.com calorie data.
 
 2.  **Set environment variables:**
 
-    Before running the script, you need to set the following environment variables with your Cronometer credentials:
+    Before running the script, you need to set the following environment variables with your Cronometer credentials.
 
+    **On macOS or Linux:**
     ```bash
     export CRONOMETER_USER="your_username"
     export CRONOMETER_PASS="your_password"
     ```
 
-    On Windows, you can use the following commands:
-
-    ```bash
+    **On Windows (Command Prompt):**
+    ```cmd
     set CRONOMETER_USER="your_username"
     set CRONOMETER_PASS="your_password"
+    ```
+
+    **On Windows (PowerShell):**
+    ```powershell
+    $env:CRONOMETER_USER="your_username"
+    $env:CRONOMETER_PASS="your_password"
     ```
 
 3.  **Run the dashboard:**
