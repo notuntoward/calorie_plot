@@ -1,25 +1,48 @@
-
+import os
 import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+from datetime import datetime, timedelta
+from cronometer import CronometerClient
 
-def create_dashboard(data_path):
+def create_dashboard():
     """
     Creates an interactive dashboard with two time-series plots of calorie data.
-
-    Args:
-        data_path (str): The path to the CSV file containing the calorie data.
     """
-    try:
-        df = pd.read_csv(data_path)
-    except FileNotFoundError:
-        print(f"Error: The file '{data_path}' was not found.")
+    username = os.getenv('CRONOMETER_USER')
+    password = os.getenv('CRONOMETER_PASS')
+
+    if not username or not password:
+        print("Error: CRONOMETER_USER and CRONOMETER_PASS environment variables must be set.")
         return
 
-    # Assume the CSV has columns: 'Date', 'Calories In', 'Calories Out'
-    # Data cleaning and preparation
+    client = CronometerClient(username, password)
+    end_date = datetime.today().date()
+    start_date = end_date - timedelta(days=365)  # Default to one year of data
+    servings = client.get_servings(start_date, end_date)
+
+    if not servings:
+        print("No data downloaded from Cronometer.")
+        return
+
+    # Process the servings data
+    df = pd.DataFrame(servings)
+    df['Date'] = pd.to_datetime(df['date'])
+    
+    # Extract calorie information
+    df['Calories'] = df['nutrients'].apply(lambda x: x.get('Energy', {}).get('amount', 0))
+    
+    # Aggregate calories per day
+    daily_calories = df.groupby(df['Date'].dt.date)['Calories'].sum().reset_index()
+    daily_calories.rename(columns={'Calories': 'Calories In'}, inplace=True)
+    
+    # Placeholder for Calories Out - Cronometer API for exercises is different
+    daily_calories['Calories Out'] = 2000 # Placeholder value
+
+    df = daily_calories
     df['Date'] = pd.to_datetime(df['Date'])
     df['Net Calories'] = df['Calories In'] - df['Calories Out']
+
 
     # Create the figure with two subplots
     fig = make_subplots(rows=2, cols=1, shared_xaxes=True,
@@ -70,5 +93,4 @@ def create_dashboard(data_path):
 
 
 if __name__ == '__main__':
-    # Please replace 'calories.csv' with the actual path to your data file.
-    create_dashboard('calories.csv')
+    create_dashboard()

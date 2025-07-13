@@ -10,10 +10,26 @@ A dashboard for visualizing cronology.com calorie data.
     uv pip install -r requirements.txt
     ```
 
-2.  **Run the dashboard:**
+2.  **Set environment variables:**
+
+    Before running the script, you need to set the following environment variables with your Cronometer credentials:
+
+    ```bash
+    export CRONOMETER_USER="your_username"
+    export CRONOMETER_PASS="your_password"
+    ```
+
+    On Windows, you can use the following commands:
+
+    ```bash
+    set CRONOMETER_USER="your_username"
+    set CRONOMETER_PASS="your_password"
+    ```
+
+3.  **Run the dashboard:**
 
     ```bash
     python dashboard.py
     ```
 
-    The script will look for a `calories.csv` file in the same directory. Make sure to replace the sample `calories.csv` with your own data. The CSV file should have the following columns: `Date`, `Calories In`, and `Calories Out`.
+    The script will download your Cronometer data, cache it locally, and then display the dashboard.
